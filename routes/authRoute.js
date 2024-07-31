@@ -14,6 +14,14 @@ route.post("/register", registerController);
 
 route.post("/login", loginController);
 
+//for tesing
+
 route.get("/test", requireSignIn, isAdmin, testController);
+
+//protected user
+
+route.get("/user-auth", requireSignIn, (req, res) => {
+  res.status(200).send({ ok: true });
+});
 
 export default route;

@@ -1,23 +1,25 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage.js";
 import About from "./pages/About.js";
 import Contact from "./pages/Contact.js";
 import Policy from "./pages/Policy.js";
 import Pagenotfound from "./pages/Pagenotfound.js";
 import Register from "./pages/auth/Register.js";
+import Login from "./pages/auth/Login.js";
+import DashBoard from "./pages/user/DashBoard.js";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/policy" element={<Policy />} />
-        <Route path="/*" element={<Pagenotfound />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/dashboard" element={<DashBoard />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/policy" element={<Policy />} />
+      <Route path="/*" element={<Pagenotfound />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<Login />} />
+    </Routes>
   );
 }
 

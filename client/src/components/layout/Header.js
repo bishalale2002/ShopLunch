@@ -1,8 +1,19 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import { BsShopWindow } from "react-icons/bs"; // Import the icon
-
+import { useAuth } from "../context/auth";
+import toast from "react-hot-toast";
 export default function Header() {
+  const [auth, setAuth] = useAuth();
+
+  const handleLogOut = () => {
+    setAuth({
+      user: null,
+      token: "",
+    });
+    localStorage.removeItem("auth");
+    toast.success("Logging out");
+  };
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -33,16 +44,28 @@ export default function Header() {
                   Category
                 </NavLink>
               </li>
-              <li className="nav-item">
-                <NavLink to="/register" className="nav-link">
-                  Register
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink to="/login" className="nav-link">
-                  Login
-                </NavLink>
-              </li>
+              {!auth.user ? (
+                <>
+                  <li className="nav-item">
+                    <NavLink to="/register" className="nav-link">
+                      Register
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/login" className="nav-link">
+                      Login
+                    </NavLink>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="nav-item">
+                    <NavLink to="/" onClick={handleLogOut} className="nav-link">
+                      LogOut
+                    </NavLink>
+                  </li>
+                </>
+              )}
               <li className="nav-item">
                 <NavLink to="/cart" className="nav-link">
                   Cart (0)
