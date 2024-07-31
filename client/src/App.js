@@ -7,12 +7,16 @@ import Pagenotfound from "./pages/Pagenotfound.js";
 import Register from "./pages/auth/Register.js";
 import Login from "./pages/auth/Login.js";
 import DashBoard from "./pages/user/DashBoard.js";
+import PrivateRoute from "./components/Routes/Private.js";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/dashboard" element={<DashBoard />} />
+      <Route path="/dashboard" element={<PrivateRoute />}>
+        <Route path="" element={<DashBoard />} />
+      </Route>
+
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/policy" element={<Policy />} />
