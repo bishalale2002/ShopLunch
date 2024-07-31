@@ -82,4 +82,15 @@ padding:10px;
   .icon-lg {
     font-size: 6rem; /* Adjust size as needed */
   }
+
+/* register */
+
+.register{
+
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 70vh;
+}
   

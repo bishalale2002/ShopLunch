@@ -11,7 +11,7 @@ import "../App.css"; // Ensure you import the CSS file for custom styles
 
 export default function Contact() {
   return (
-    <Layouts>
+    <Layouts title={"Contact Us"}>
       <div className="container mt-5">
         <h1>Contact Us</h1>
         <div className="row mt-4">
@@ -66,12 +66,12 @@ export default function Contact() {
               Instagram
             </h3>
             <a
-              href="https://www.instagram.com/your-profile"
+              href="https://www.instagram.com/bishal.ale.2002/"
               target="_blank"
               rel="noopener noreferrer"
               className="contact-link"
             >
-              instagram.com/your-profile
+              instagram.com/bishal.ale.2002
             </a>
           </div>
         </div>

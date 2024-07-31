@@ -4,7 +4,7 @@ import { FaShieldAlt, FaUserShield, FaEnvelope } from "react-icons/fa";
 
 export default function Policy() {
   return (
-    <Layouts>
+    <Layouts title={"Privacy policy"}>
       <div className="container mt-5">
         <h1 className="text-center mb-4">Privacy Policy</h1>
 

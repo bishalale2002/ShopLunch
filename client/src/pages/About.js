@@ -4,7 +4,7 @@ import { FaInfoCircle, FaHandHoldingUsd, FaTag } from "react-icons/fa";
 
 export default function About() {
   return (
-    <Layouts>
+    <Layouts title={"About us-Sasto Deal"}>
       <div className="container mt-5">
         <h1 className="text-center mb-4">About Sasto Deal</h1>
 

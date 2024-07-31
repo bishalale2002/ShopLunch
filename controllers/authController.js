@@ -8,19 +8,19 @@ export const registerController = async (req, res) => {
     const { name, email, password, phone, address } = req.body;
 
     if (!name) {
-      return res.status(400).send({ error: "Name is Empty" });
+      return res.status(400).send({ message: "Name is Empty" });
     }
     if (!email) {
-      return res.status(400).send({ error: "Email is Empty" });
+      return res.status(400).send({ message: "Email is Empty" });
     }
     if (!password) {
-      return res.status(400).send({ error: "Password is Empty" });
+      return res.status(400).send({ message: "Password is Empty" });
     }
     if (!phone) {
-      return res.status(400).send({ error: "Phone is Empty" });
+      return res.status(400).send({ message: "Phone is Empty" });
     }
     if (!address) {
-      return res.status(400).send({ error: "Address is Empty" });
+      return res.status(400).send({ message: "Address is Empty" });
     }
 
     // Check user
