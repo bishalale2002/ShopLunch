@@ -59,10 +59,34 @@ export default function Header() {
                 </>
               ) : (
                 <>
-                  <li className="nav-item">
-                    <NavLink to="/" onClick={handleLogOut} className="nav-link">
-                      LogOut
+                  <li className="nav-item dropdown">
+                    <NavLink
+                      className="nav-link dropdown-toggle"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      {auth?.user?.name}
                     </NavLink>
+                    <ul className="dropdown-menu">
+                      <li>
+                        <NavLink
+                          className="dropdown-item nav-item"
+                          to="/dashboard"
+                        >
+                          DashBoard
+                        </NavLink>
+                      </li>
+                      <li>
+                        <NavLink
+                          className="dropdown-item nav-item"
+                          to="/"
+                          onClick={handleLogOut}
+                        >
+                          LogOut
+                        </NavLink>
+                      </li>
+                    </ul>
                   </li>
                 </>
               )}
