@@ -27,5 +27,10 @@ route.get("/test", requireSignIn, isAdmin, testController);
 route.get("/user-auth", requireSignIn, (req, res) => {
   res.status(200).send({ ok: true });
 });
+//protected admin
+
+route.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
+  res.status(200).send({ ok: true });
+});
 
 export default route;
