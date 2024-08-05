@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Layouts from "../../components/layout/Layouts";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../components/context/auth";
 function Login() {
   const [email, setEmail] = useState("");
@@ -13,6 +13,7 @@ function Login() {
   const [auth, setAuth] = useAuth();
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +34,7 @@ function Login() {
         localStorage.setItem("auth", JSON.stringify(res.data));
         setTimeout(() => {
           setAlertMessage("");
-          navigate("/");
+          navigate(location.state || "/");
         }, 2000);
       } else {
         setAlertMessage(res.data.message);
@@ -96,10 +97,23 @@ function Login() {
                         onChange={(e) => setPassword(e.target.value)}
                       />
                     </div>
+                    <div className="mt-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigate("/forgot-password");
+                        }}
+                        className="btn btn-danger w-100"
+                      >
+                        Forgot Password ?
+                      </button>
+                    </div>
 
-                    <button type="submit" className="btn btn-secondary w-100">
-                      Login
-                    </button>
+                    <div className="mt-3">
+                      <button type="submit" className="btn btn-secondary w-100">
+                        Login
+                      </button>
+                    </div>
                   </form>
                 </div>
               </div>

@@ -9,7 +9,7 @@ function Register() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [address, setAddress] = useState("");
-
+  const [answer, setAnswer] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("");
 
@@ -17,6 +17,7 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log({ name, email, password, phone, address, answer }); // Log form data
     try {
       const res = await axios.post("/api/v1/auth/register", {
         name,
@@ -24,6 +25,7 @@ function Register() {
         password,
         phone,
         address,
+        answer, // Include the answer field
       });
 
       if (res && res.data.success) {
@@ -55,9 +57,7 @@ function Register() {
       <Layouts title="Register">
         <div className="container mt-5">
           <div className="row justify-content-center">
-            <div className="col-md-4 ">
-              {" "}
-              {/* Apply custom width class */}
+            <div className="col-md-4">
               {alertMessage && (
                 <div
                   className={`alert alert-${alertType} alert-dismissible fade show`}
@@ -119,6 +119,15 @@ function Register() {
                         placeholder="Address"
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="What's your pet name"
+                        value={answer}
+                        onChange={(e) => setAnswer(e.target.value)}
                       />
                     </div>
                     <button type="submit" className="btn btn-secondary w-100">

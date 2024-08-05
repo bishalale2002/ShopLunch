@@ -2,25 +2,32 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    user: {
+    name: {
       type: String,
-      require: true,
+      required: true, // Changed 'require' to 'required'
       trim: true,
     },
     email: {
       type: String,
-      require: true,
+      required: true, // Changed 'require' to 'required'
       unique: true,
     },
     password: {
       type: String,
-      require: true,
+      required: true, // Changed 'require' to 'required'
     },
     phone: {
       type: String,
-      require: true,
+      required: true, // Changed 'require' to 'required'
     },
-    address: { type: String, require: true },
+    address: {
+      type: String,
+      required: true, // Changed 'require' to 'required'
+    },
+    answer: {
+      type: String,
+      required: true, // Changed 'require' to 'required'
+    },
     role: {
       type: Number,
       default: 0,
@@ -29,4 +36,4 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("users", userSchema);
+export default mongoose.model("User", userSchema);
