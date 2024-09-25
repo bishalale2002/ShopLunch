@@ -11,7 +11,9 @@ function Orders() {
             <UserMenu />
           </div>
 
-          <div className="col-md-9">Orders</div>
+          <div className="col-md-9">
+            <h2>Orders</h2>
+          </div>
         </div>
       </Layouts>
     </div>

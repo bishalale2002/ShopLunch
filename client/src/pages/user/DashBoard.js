@@ -14,9 +14,9 @@ function DashBoard() {
             </div>
             <div className="col-md-9">
               <div className="card w-50 p-3">
-                <h4>Admin Name : {auth?.user?.name}</h4>
-                <h4>Admin email : {auth?.user?.email}</h4>
-                <h4>Admin phone : {auth?.user?.phone}</h4>
+                <h4>User Name : {auth?.user?.name}</h4>
+                <h4>User Email : {auth?.user?.email}</h4>
+                <h4>User Phone : {auth?.user?.phone}</h4>
               </div>
             </div>
           </div>

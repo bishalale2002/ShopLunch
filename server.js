@@ -5,6 +5,7 @@ import morgan from "morgan";
 import ConnectDB from "./config/ConnectDB.js";
 import authRoutes from "./routes/authRoute.js";
 import cors from "cors";
+import categoryRoutes from "./routes/categoryRoutes.js";
 // Configure dotenv
 dotenv.config();
 
@@ -22,7 +23,7 @@ app.use(express.json());
 //routes
 
 app.use("/api/v1/auth", authRoutes);
-
+app.use("/api/v1/category", categoryRoutes);
 // API endpoint
 app.get("/", (req, res) => {
   res.send("<h1>Welcome To Sasto Deal</h1>");

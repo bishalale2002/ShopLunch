@@ -11,7 +11,9 @@ function Profile() {
             <UserMenu />
           </div>
 
-          <div className="col-md-9">Profile</div>
+          <div className="col-md-9">
+            <h2>Profile</h2>
+          </div>
         </div>
       </Layouts>
     </div>
