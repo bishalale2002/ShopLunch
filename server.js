@@ -6,6 +6,7 @@ import ConnectDB from "./config/ConnectDB.js";
 import authRoutes from "./routes/authRoute.js";
 import cors from "cors";
 import categoryRoutes from "./routes/categoryRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
 // Configure dotenv
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use(express.json());
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/category", categoryRoutes);
+app.use("/api/v1/product", productRoutes);
 // API endpoint
 app.get("/", (req, res) => {
   res.send("<h1>Welcome To Sasto Deal</h1>");
