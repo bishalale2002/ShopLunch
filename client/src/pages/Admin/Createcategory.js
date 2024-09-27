@@ -38,6 +38,28 @@ function Createcategory() {
     // Code for updating the category will go here
   };
 
+  //delete
+
+  const handleDelete = async (pid) => {
+    try {
+      const { data } = await axios.delete(
+        `/api/v1/category/delete-category/${pid}`
+      );
+
+      if (data.success) {
+        toast.success(" Selected Category deleted");
+
+        getAllCategory();
+      } else {
+        toast.error(data.error);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Error While Deleting");
+    }
+    // Code for updating the category will go here
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -110,7 +132,14 @@ function Createcategory() {
                         >
                           Edit
                         </button>
-                        <button className="btn btn-danger ms-2">Delete</button>
+                        <button
+                          className="btn btn-danger ms-2"
+                          onClick={() => {
+                            handleDelete(c._id);
+                          }}
+                        >
+                          Delete
+                        </button>
                       </td>
                     </tr>
                   ))}

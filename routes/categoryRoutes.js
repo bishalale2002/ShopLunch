@@ -33,7 +33,7 @@ export default router;
 
 router.get("/single-category/:slug", singleCategoryController);
 //delete
-router.get(
+router.delete(
   "/delete-category/:id",
   requireSignIn,
   isAdmin,
