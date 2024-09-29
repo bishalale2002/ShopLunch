@@ -3,6 +3,7 @@ import Footer from "./Footer";
 import Header from "./Header";
 import { Helmet } from "react-helmet";
 import { Toaster } from "react-hot-toast";
+
 export default function Layouts({
   children,
   title = "Sasto Deal - Bid Now",
@@ -20,7 +21,9 @@ export default function Layouts({
         <title>{title}</title>
       </Helmet>
       <Header />
-      <main style={{ minHeight: "70vh" }}>
+      <main style={{ minHeight: "70vh", marginTop: "70px" }}>
+        {" "}
+        {/* Adjusted margin */}
         <Toaster />
         {children}
       </main>

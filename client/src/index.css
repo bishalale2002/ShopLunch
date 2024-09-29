@@ -93,3 +93,22 @@ padding:10px;
     flex-direction: column;
     height: 70vh;
 } */
+
+
+/*
+to disable arrow from select category
+
+*/
+.custom-select .ant-select-arrow {
+    display: none; /* This hides the down arrow */
+  }
+  
+  .custom-select .ant-select-selection-search {
+    display: block !important; /* Ensures the search icon is still visible */
+  }
+  
+  .card-img-top {
+    height: 200px; /* Set a fixed height */
+    object-fit: contain; /* Ensure the entire image fits within the card */
+  }
+  

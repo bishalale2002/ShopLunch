@@ -3,6 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { BsShopWindow } from "react-icons/bs"; // Import the icon
 import { useAuth } from "../context/auth";
 import toast from "react-hot-toast";
+
 export default function Header() {
   const [auth, setAuth] = useAuth();
 
@@ -14,9 +15,10 @@ export default function Header() {
     localStorage.removeItem("auth");
     toast.success("Logging out");
   };
+
   return (
     <>
-      <nav className="navbar navbar-expand-lg bg-body-tertiary">
+      <nav className="navbar navbar-expand-lg bg-body-tertiary fixed-top">
         <div className="container-fluid">
           <button
             className="navbar-toggler"
@@ -30,7 +32,7 @@ export default function Header() {
             <span className="navbar-toggler-icon" />
           </button>
           <div className="collapse navbar-collapse" id="navbarTogglerDemo01">
-            <Link to="/" className="navbar-brand ">
+            <Link to="/" className="navbar-brand">
               <BsShopWindow /> Sasto Deal
             </Link>
             <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
