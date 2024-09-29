@@ -54,9 +54,24 @@ export default function HomePage() {
 
   // Fetch products when component mounts
   useEffect(() => {
-    getProducts();
-  }, []);
+    if (!radio.length || !checked.length) getProducts();
+  }, [radio.length, checked.length]);
+  // eslint-disable-next-line
+  useEffect(() => {
+    if (radio.length || checked.length) filterProduct();
+  }, [radio, checked]);
 
+  const filterProduct = async () => {
+    try {
+      const { data } = await axios.post("/api/v1/product/product-filter", {
+        radio,
+        checked,
+      });
+      setProducts(data.product);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Layouts title={"All Products Best-offer"}>
       <div className="row mt-3">
@@ -83,11 +98,20 @@ export default function HomePage() {
               ))}
             </Radio.Group>
           </div>
+
+          <div className="flex-column ">
+            <button
+              className="btn btn-danger mt-3 w-50 ms-3"
+              onClick={() => window.location.reload()}
+            >
+              Reset Filters
+            </button>
+          </div>
         </div>
 
         <div className="col-md-9">
           <h2 className="text-center">All Products</h2>
-          {JSON.stringify(radio, null, 4)}{" "}
+
           {/* Display checked category IDs for debugging */}
           <div className="row">
             {products.length > 0 ? (

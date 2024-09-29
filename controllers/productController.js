@@ -205,3 +205,27 @@ export const updateProduct = async (req, res) => {
     });
   }
 };
+
+//filter
+
+export const productFilterController = async (req, res) => {
+  try {
+    const { radio, checked } = req.body;
+    const args = {};
+    if (radio.length) args.price = { $gte: radio[0], $lte: radio[1] };
+    if (checked.length > 0) args.category = checked;
+    const product = await productModel.find(args);
+
+    res.status(200).send({
+      success: true,
+      product,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      success: false,
+      message: "Error While Featching Filter ",
+      error,
+    });
+  }
+};
