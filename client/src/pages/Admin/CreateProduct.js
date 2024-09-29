@@ -15,7 +15,7 @@ function CreateProduct() {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [shipping, setShipping] = useState("");
+  const [shipping, setShipping] = useState(false);
   const [description, setDescription] = useState("");
 
   //get all category
@@ -177,8 +177,8 @@ function CreateProduct() {
                     showSearch
                     className="form-select mb-3"
                   >
-                    <Option value="0">Yes</Option>
-                    <Option value="1">No</Option>
+                    <Option value="true">Yes</Option>
+                    <Option value="false">No</Option>
                   </Select>
                 </div>
                 <div className="mb-3">
