@@ -6,7 +6,9 @@ import {
   deleteProductController,
   getProductController,
   getSingleProductController,
+  productCountController,
   productFilterController,
+  productListController,
   productPhotoController,
   updateProduct,
 } from "../controllers/productController.js";
@@ -36,4 +38,12 @@ router.delete("/delete-product/:pid", deleteProductController);
 //product filter
 
 router.post("/product-filter", productFilterController);
+
+//product count to display limited product helps to reduce load in api
+
+router.get("/product-count/", productCountController);
+
+//product per page
+
+router.get("/product-list/:page", productListController);
 export default router;
