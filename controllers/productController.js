@@ -278,3 +278,57 @@ export const productListController = async (req, res) => {
     });
   }
 };
+export const searchProductController = async (req, res) => {
+  try {
+    const { keyword } = req.params;
+
+    if (!keyword || typeof keyword !== "string" || keyword.trim() === "") {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid keyword for search",
+      });
+    }
+
+    const product = await productModel
+      .find({
+        $or: [
+          { name: { $regex: keyword, $options: "i" } },
+          { description: { $regex: keyword, $options: "i" } },
+        ],
+      })
+      .select("-photo");
+
+    res.json(product);
+  } catch (error) {
+    console.error("Error in searchProductController:", error);
+    res.status(400).send({
+      success: false,
+      message: "Error while searching",
+      error,
+    });
+  }
+};
+//related product
+export const relatedProductController = async (req, res) => {
+  try {
+    const { pid, cid } = req.params;
+
+    const products = await productModel
+      .find({ category: cid, _id: { $ne: pid } })
+      .select("-photo")
+      .limit(4)
+      .populate("category");
+
+    res.status(200).send({
+      success: true,
+      message: "Successfully fetched related products",
+      products,
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      message: "Error in fetching related products",
+      error: error.message, // Sending the error message for debugging
+    });
+  }
+};

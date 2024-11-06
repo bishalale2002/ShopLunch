@@ -3,7 +3,7 @@ import Layouts from "./../components/layout/Layouts";
 import axios from "axios";
 import { Checkbox, Radio } from "antd";
 import { prices } from "../components/Prices";
-
+import { useNavigate } from "react-router-dom";
 export default function HomePage() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -13,7 +13,7 @@ export default function HomePage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   //get total
-
+  const navigate = useNavigate();
   const getTotal = async () => {
     try {
       const { data } = await axios.get("/api/v1/product/product-count");
@@ -173,7 +173,12 @@ export default function HomePage() {
                         {product.description.substring(0, 60)}...
                       </p>
                       <p className="card-text">Price: ${product.price}</p>
-                      <button className="btn btn-primary ms-1">
+                      <button
+                        className="btn btn-primary ms-1"
+                        onClick={() => {
+                          navigate(`/product-details/${product.slug}`);
+                        }}
+                      >
                         More Details
                       </button>
                       <button className="btn btn-secondary ms-1">

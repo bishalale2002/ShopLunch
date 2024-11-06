@@ -3,6 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { BsShopWindow } from "react-icons/bs"; // Import the icon
 import { useAuth } from "../context/auth";
 import toast from "react-hot-toast";
+import SearchInput from "../Form/SearchInput";
 
 export default function Header() {
   const [auth, setAuth] = useAuth();
@@ -36,6 +37,7 @@ export default function Header() {
               <BsShopWindow /> Sasto Deal
             </Link>
             <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+              <SearchInput />
               <li className="nav-item">
                 <NavLink to="/" className="nav-link">
                   Home
