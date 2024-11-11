@@ -17,7 +17,7 @@ const Categories = () => {
                 <div className="card-body d-flex flex-column justify-content-center">
                   <h5 className="card-title">{c.name}</h5>
                   <Link
-                    to={`/category/${c.slug}`}
+                    to={`/categories/${c.slug}`}
                     className="btn btn-primary mt-3"
                   >
                     Explore {c.name}
