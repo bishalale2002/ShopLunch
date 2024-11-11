@@ -1,5 +1,6 @@
 import slugify from "slugify";
 import productModel from "../models/productModel.js";
+import CategoryModel from "../models/CategoryModel.js";
 import fs from "fs";
 
 export const createProductController = async (req, res) => {
@@ -329,6 +330,29 @@ export const relatedProductController = async (req, res) => {
       success: false,
       message: "Error in fetching related products",
       error: error.message, // Sending the error message for debugging
+    });
+  }
+};
+
+//Category wise  filter
+export const productCategoryController = async (req, res) => {
+  try {
+    const category = await CategoryModel.findOne({ slug: req.params.slug });
+    const products = await productModel
+      .find({ category: category._id })
+      .populate("category");
+
+    res.status(200).send({
+      success: true,
+      message: "Category Fetched",
+      product: products, // renamed to match frontend code
+      category,
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      message: "Error while fetching category and products",
+      error,
     });
   }
 };
