@@ -187,7 +187,21 @@ export default function HomePage() {
                       <button
                         className="btn btn-secondary ms-1"
                         onClick={() => {
-                          setCart([...cart, product]);
+                          // Set quantity to 1 for the item
+                          const productWithQuantity = {
+                            ...product,
+                            quantity: 1,
+                          };
+
+                          // Update the cart state with the new product
+                          setCart([...cart, productWithQuantity]);
+
+                          // Save the updated cart to localStorage with quantity set to 1
+                          localStorage.setItem(
+                            "cart",
+                            JSON.stringify([...cart, productWithQuantity])
+                          );
+
                           toast.success("Item Added to Cart");
                         }}
                       >
