@@ -1,7 +1,8 @@
 import userModel from "../models/userModel.js";
+
 import { compatePassword, hashPassword } from "./../helpers/authHelper.js";
 import JWT from "jsonwebtoken";
-
+import bcrypt from "bcrypt";
 //REGISTER || POST
 export const registerController = async (req, res) => {
   try {
@@ -155,4 +156,56 @@ export const forgotPasswordController = async (req, res) => {
 
 export const testController = async (req, res) => {
   res.send({ message: "this is test" });
+};
+
+export const updateProfileController = async (req, res) => {
+  try {
+    const { name, email, password, phone, address } = req.body;
+
+    // Fetch current user details from the database
+    const user = await userModel.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Validate required fields
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    // Optional: hash the new password if provided
+    let hashedPassword = user.password;
+    if (password) {
+      if (password.length < 6) {
+        return res
+          .status(400)
+          .json({ message: "Password must be at least 6 characters long" });
+      }
+      hashedPassword = await hashPassword(password);
+    }
+
+    // Update user details, keeping unchanged fields as they are
+    const updatedUser = await userModel.findByIdAndUpdate(
+      req.user._id,
+      {
+        name: name || user.name,
+        email: email || user.email,
+        password: hashedPassword,
+        phone: phone || user.phone,
+        address: address || user.address,
+      },
+      { new: true } // Return the updated document
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error updating profile", error });
+  }
 };

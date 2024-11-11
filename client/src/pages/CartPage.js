@@ -1,40 +1,74 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Layouts from "../components/layout/Layouts";
 import { useAuth } from "../components/context/auth";
 import { useCart } from "../components/context/cart";
 import { useNavigate } from "react-router-dom";
+import DropIn from "braintree-web-drop-in-react";
+import axios from "axios";
 
 const CartPage = () => {
   const navigate = useNavigate();
   const [cart, setCart] = useCart();
   const [auth] = useAuth();
+  const [clientToken, setClientToken] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
+  const [instance, setInstance] = useState();
+  const [loading, setLoading] = useState(false);
 
-  // Set initial quantity to 1 for every item when the cart is first loaded
   useEffect(() => {
     setCart((prevCart) =>
       prevCart.map((item) => ({
         ...item,
-        quantity: 1, // Set to 1 if quantity is not already set
+        quantity: 1,
       }))
     );
   }, [setCart]);
 
+  useEffect(() => {
+    getToken();
+  }, [auth?.token]);
+
+  const getToken = async () => {
+    try {
+      const { data } = await axios.get("/api/v1/product/braintree/token");
+      setClientToken(data?.clientToken);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleRemoveItem = (productId) => {
     setCart((prevCart) => {
       const updatedCart = prevCart.filter((item) => item._id !== productId);
-
-      // Save the updated cart to localStorage
       localStorage.setItem("cart", JSON.stringify(updatedCart));
-
-      return updatedCart; // Return the updated cart to update the state
+      return updatedCart;
     });
+  };
+
+  const handlePayments = async () => {
+    try {
+      setLoading(true);
+      const { nonce } = await instance.requestPaymentMethod();
+      const response = await axios.post("/api/v1/product/braintree/payment", {
+        nonce,
+        cart,
+      });
+      console.log(response.data);
+      setLoading(false);
+      navigate("/dashboard/user/orders");
+      alert("Payment Successful!");
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+      alert("Payment Failed. Please try again.");
+    }
   };
 
   const handleQuantityChange = (productId, delta) => {
     setCart((prevCart) =>
       prevCart.map((item) =>
         item._id === productId
-          ? { ...item, quantity: Math.max(item.quantity + delta, 1) } // Ensure quantity cannot be less than 1
+          ? { ...item, quantity: Math.max(item.quantity + delta, 1) }
           : item
       )
     );
@@ -45,6 +79,9 @@ const CartPage = () => {
       <div className="container">
         <div className="row">
           <h2>Hello, {auth?.token && auth?.user?.name}</h2>
+          <p>
+            Current Address: {auth?.user?.address || "No address available"}
+          </p>
           <h4 className="text-center">
             {cart?.length > 0
               ? `You have ${cart.length} items in your cart`
@@ -66,7 +103,7 @@ const CartPage = () => {
                         style={{
                           maxWidth: "100px",
                           maxHeight: "100px",
-                          objectFit: "cover", // Ensures image is cropped properly
+                          objectFit: "cover",
                         }}
                       />
                     </div>
@@ -125,12 +162,32 @@ const CartPage = () => {
                     )
                     .toFixed(2)}
                 </p>
-                <button
-                  className="btn btn-primary w-100"
-                  onClick={() => navigate("/checkout")}
-                >
-                  Proceed to Checkout
-                </button>
+
+                {clientToken ? (
+                  <div className="form-group mb-3">
+                    <DropIn
+                      options={{
+                        authorization: clientToken,
+                        paypal: { flow: "vault" },
+                      }}
+                      onInstance={(instance) => setInstance(instance)}
+                      onError={(error) => {
+                        console.error("Braintree Error:", error);
+                        alert("Please check your card details and try again."); // Custom error message
+                      }}
+                    />
+
+                    <button
+                      className="btn btn-primary"
+                      onClick={handlePayments}
+                      disabled={loading || !instance || !auth?.user?.address}
+                    >
+                      {loading ? "Processing..." : "Make Payment"}
+                    </button>
+                  </div>
+                ) : (
+                  <p>Loading payment options...</p>
+                )}
               </div>
             </div>
           </div>

@@ -4,6 +4,7 @@ import {
   loginController,
   testController,
   forgotPasswordController,
+  updateProfileController,
 } from "../controllers/authController.js";
 import { isAdmin, requireSignIn } from "../middelwares/authMiddleware.js";
 const route = express.Router();
@@ -32,5 +33,8 @@ route.get("/user-auth", requireSignIn, (req, res) => {
 route.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
   res.status(200).send({ ok: true });
 });
+
+//user update
+route.put("/profile", requireSignIn, updateProfileController);
 
 export default route;
