@@ -14,6 +14,7 @@ import {
   productListController,
   productPhotoController,
   relatedProductController,
+  searchAlgorithmController,
   searchProductController,
   updateProduct,
 } from "../controllers/productController.js";
@@ -70,4 +71,7 @@ router.get("/braintree/token", braintreeTokenController);
 
 //payments
 router.post("/braintree/payment", requireSignIn, braintreePaymnetController);
+
+//search algorithm
+router.get("/suggestions/:keyword", searchAlgorithmController);
 export default router;

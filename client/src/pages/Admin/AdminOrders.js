@@ -1,21 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Layouts from "../../components/layout/Layouts";
-import AdminMenu from "./../../components/layout/AdminMenu";
+import AdminMenu from "../../components/layout/AdminMenu";
 import axios from "axios";
-import toast from "react-hot-toast";
 import { useAuth } from "../../components/context/auth";
 import { Select } from "antd";
+
 const AdminOrders = () => {
   const { Option } = Select;
-  const [status, setStatus] = useState([
-    "Not Process",
-    "Processing",
-    "Shipped",
-    "Delivered",
-    "cancel",
-  ]);
-  const [changeStatus, setChangeStatus] = useState("");
-
   const [orders, setOrders] = useState([]);
   const [auth] = useAuth();
 
@@ -29,8 +20,8 @@ const AdminOrders = () => {
   // Get the orders from the API
   const getOrders = async () => {
     try {
-      const { data } = await axios.get("/api/v1/auth/all-orders");
-      setOrders(data.orders);
+      const response = await axios.get("/api/v1/auth/all-orders");
+      setOrders(response.data.orders); // Directly access data.orders from the response
     } catch (error) {
       console.error(error);
     }
@@ -38,14 +29,15 @@ const AdminOrders = () => {
 
   const handleChange = async (orderId, value) => {
     try {
-      const { data } = await axios.put(`/api/v1/auth/order-status/${orderId}`, {
+      await axios.put(`/api/v1/auth/order-status/${orderId}`, {
         status: value,
       });
-      getOrders();
+      getOrders(); // No need to store the response in a variable
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
     <Layouts>
       <div className="container">
@@ -78,14 +70,17 @@ const AdminOrders = () => {
                             onChange={(value) => handleChange(order._id, value)}
                             defaultValue={order?.status}
                           >
-                            {status.map((s, i) => {
-                              return (
-                                // Ensure you return the Option element here
-                                <Option key={i} value={s}>
-                                  {s}
-                                </Option>
-                              );
-                            })}
+                            {[
+                              "Not Process",
+                              "Processing",
+                              "Shipped",
+                              "Delivered",
+                              "cancel",
+                            ].map((s, i) => (
+                              <Option key={i} value={s}>
+                                {s}
+                              </Option>
+                            ))}
                           </Select>
                         </td>
                         <td>{order.buyer?.name || "N/A"}</td>

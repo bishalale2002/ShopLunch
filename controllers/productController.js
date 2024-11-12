@@ -417,3 +417,22 @@ export const braintreePaymnetController = async (req, res) => {
     console.log(error);
   }
 };
+
+//search controller
+export const searchAlgorithmController = async (req, res) => {
+  const { keyword } = req.params;
+
+  try {
+    // Find products where the name includes the keyword (case-insensitive)
+    const suggestions = await productModel
+      .find({
+        name: { $regex: keyword, $options: "i" }, // Case-insensitive regex search
+      })
+      .limit(10); // Limit to 10 suggestions
+
+    res.json(suggestions); // Return suggestions as JSON
+  } catch (error) {
+    console.error("Error fetching suggestions:", error);
+    res.status(500).json({ message: "Error fetching suggestions" });
+  }
+};
