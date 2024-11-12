@@ -5,7 +5,7 @@ import { useCart } from "../components/context/cart";
 import { useNavigate } from "react-router-dom";
 import DropIn from "braintree-web-drop-in-react";
 import axios from "axios";
-
+import toast from "react-hot-toast";
 const CartPage = () => {
   const navigate = useNavigate();
   const [cart, setCart] = useCart();
@@ -55,8 +55,10 @@ const CartPage = () => {
       });
       console.log(response.data);
       setLoading(false);
+      localStorage.removeItem("cart");
+      setCart([]);
       navigate("/dashboard/user/orders");
-      alert("Payment Successful!");
+      toast.success("Payment Successful!");
     } catch (error) {
       setLoading(false);
       console.log(error);

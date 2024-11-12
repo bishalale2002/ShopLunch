@@ -5,6 +5,10 @@ import {
   testController,
   forgotPasswordController,
   updateProfileController,
+  getOrderController,
+  getAllOrderController,
+  orderStatusController,
+  allUsersController,
 } from "../controllers/authController.js";
 import { isAdmin, requireSignIn } from "../middelwares/authMiddleware.js";
 const route = express.Router();
@@ -37,4 +41,19 @@ route.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
 //user update
 route.put("/profile", requireSignIn, updateProfileController);
 
+//orders
+route.get("/orders", requireSignIn, getOrderController);
+
+//allorders
+route.get("/all-orders", requireSignIn, isAdmin, getAllOrderController);
+// order status
+route.put(
+  "/order-status/:orderId",
+  requireSignIn,
+  isAdmin,
+  orderStatusController
+);
+
+//all users
+route.get("/all-users", requireSignIn, isAdmin, allUsersController);
 export default route;

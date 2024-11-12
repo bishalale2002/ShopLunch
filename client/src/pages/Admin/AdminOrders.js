@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from "react";
 import Layouts from "../../components/layout/Layouts";
-import UserMenu from "../../components/layout/UserMenu";
+import AdminMenu from "./../../components/layout/AdminMenu";
 import axios from "axios";
+import toast from "react-hot-toast";
 import { useAuth } from "../../components/context/auth";
+import { Select } from "antd";
+const AdminOrders = () => {
+  const { Option } = Select;
+  const [status, setStatus] = useState([
+    "Not Process",
+    "Processing",
+    "Shipped",
+    "Delivered",
+    "cancel",
+  ]);
+  const [changeStatus, setChangeStatus] = useState("");
 
-function Orders() {
   const [orders, setOrders] = useState([]);
   const [auth] = useAuth();
 
@@ -18,24 +29,32 @@ function Orders() {
   // Get the orders from the API
   const getOrders = async () => {
     try {
-      const { data } = await axios.get("/api/v1/auth/orders");
+      const { data } = await axios.get("/api/v1/auth/all-orders");
       setOrders(data.orders);
     } catch (error) {
       console.error(error);
     }
   };
 
+  const handleChange = async (orderId, value) => {
+    try {
+      const { data } = await axios.put(`/api/v1/auth/order-status/${orderId}`, {
+        status: value,
+      });
+      getOrders();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
-    <div>
-      <Layouts>
+    <Layouts>
+      <div className="container">
         <div className="row">
           <div className="col-md-3">
-            <UserMenu />
+            <AdminMenu />
           </div>
-
           <div className="col-md-9">
-            <h2>Orders</h2>
-            {/* Orders Table */}
+            <h1 className="text-center">All orders</h1>
             <table className="table table-striped">
               <thead>
                 <tr>
@@ -53,7 +72,22 @@ function Orders() {
                     <React.Fragment key={order._id}>
                       <tr>
                         <td>{index + 1}</td>
-                        <td>{order.status}</td>
+                        <td>
+                          <Select
+                            border={false}
+                            onChange={(value) => handleChange(order._id, value)}
+                            defaultValue={order?.status}
+                          >
+                            {status.map((s, i) => {
+                              return (
+                                // Ensure you return the Option element here
+                                <Option key={i} value={s}>
+                                  {s}
+                                </Option>
+                              );
+                            })}
+                          </Select>
+                        </td>
                         <td>{order.buyer?.name || "N/A"}</td>
                         <td>{order.products.length}</td>
                         <td>{order.payment ? "Paid" : "Not Paid"}</td>
@@ -115,9 +149,9 @@ function Orders() {
             </table>
           </div>
         </div>
-      </Layouts>
-    </div>
+      </div>
+    </Layouts>
   );
-}
+};
 
-export default Orders;
+export default AdminOrders;

@@ -1,5 +1,5 @@
 import userModel from "../models/userModel.js";
-
+import orderModel from "../models/orderModel.js";
 import { compatePassword, hashPassword } from "./../helpers/authHelper.js";
 import JWT from "jsonwebtoken";
 import bcrypt from "bcrypt";
@@ -207,5 +207,103 @@ export const updateProfileController = async (req, res) => {
     res
       .status(500)
       .json({ success: false, message: "Error updating profile", error });
+  }
+};
+
+//orders
+export const getOrderController = async (req, res) => {
+  try {
+    const orders = await orderModel
+      .find({ buyer: req.user._id }) // corrected to 'buyer'
+      .populate("products", "-photo")
+      .populate("buyer", "name");
+    res.status(200).send({ success: true, message: "order Featched", orders });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "error while fetching orders",
+      error,
+    });
+  }
+};
+
+//allorders
+export const getAllOrderController = async (req, res) => {
+  try {
+    const orders = await orderModel
+      .find({})
+      .populate("products", "-photo")
+      .populate("buyer", "name")
+      .sort({ createdAt: -1 }); // Ensure correct sorting by createdAt
+
+    // Optional: Check if createdAt exists and is a Date type
+    orders.forEach((order) => {
+      if (!(order.createdAt instanceof Date)) {
+        console.log(`Invalid date for order ${order._id}`);
+      }
+    });
+
+    res.status(200).send({ success: true, message: "Orders fetched", orders });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error while fetching orders",
+      error,
+    });
+  }
+};
+
+//order status
+
+export const orderStatusController = async (req, res) => {
+  try {
+    const { orderId } = req.params; // Extract orderId from params
+    const { status } = req.body; // Extract status from the request body
+
+    // Corrected query for finding and updating the order
+    const order = await orderModel.findOneAndUpdate(
+      { _id: orderId }, // Use an object with _id to find the correct order
+      { status }, // Update the status
+      { new: true } // Return the updated document
+    );
+
+    if (!order) {
+      return res
+        .status(404)
+        .send({ success: false, message: "Order not found" });
+    }
+
+    res.json(order); // Return the updated order
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: "Error while updating",
+      error,
+    });
+  }
+};
+
+//all users
+
+export const allUsersController = async (req, res) => {
+  try {
+    const users = await userModel.find().select("name email phone address"); // Select only required fields
+
+    if (!users) {
+      return res.status(404).send({
+        success: false,
+        message: "No users found",
+      });
+    }
+
+    res.status(200).json({ success: true, users });
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: "Error while fetching users",
+      error,
+    });
   }
 };
