@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // Removed useEffect and useCallback
+import React, { useState } from "react";
 import { useSearch } from "../context/search";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -30,7 +30,7 @@ const SearchInput = () => {
     } else {
       setSuggestions([]); // Clear suggestions if keyword is empty
     }
-  }, 500); // 500ms debounce time
+  }, 2000); // 500ms debounce time
 
   // Only trigger suggestions when the user types something
   const handleInputChange = (e) => {
@@ -80,8 +80,8 @@ const SearchInput = () => {
         />
         <button
           className="btn btn-outline-secondary"
-          type="button" // Change to type="button" so it won't trigger form submit
-          onClick={handleSubmit} // Trigger search on click of the button
+          type="button"
+          onClick={handleSubmit}
         >
           Search
         </button>

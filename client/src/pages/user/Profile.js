@@ -74,7 +74,7 @@ function Profile() {
           <div className="col-md-3">
             <UserMenu />
           </div>
-          <div className="col-md-9">
+          <div className="col-md-9 w-50">
             <div className="card shadow">
               <div className="card-body">
                 <h1 className="card-title text-center">User Profile</h1>

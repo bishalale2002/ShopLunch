@@ -4,29 +4,29 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true, // Changed 'require' to 'required'
+      required: true, 
       trim: true,
     },
     email: {
       type: String,
-      required: true, // Changed 'require' to 'required'
+      required: true, 
       unique: true,
     },
     password: {
       type: String,
-      required: true, // Changed 'require' to 'required'
+      required: true, 
     },
     phone: {
       type: String,
-      required: true, // Changed 'require' to 'required'
+      required: true, 
     },
     address: {
       type: String,
-      required: true, // Changed 'require' to 'required'
+      required: true, 
     },
     answer: {
       type: String,
-      required: true, // Changed 'require' to 'required'
+      required: true, 
     },
     role: {
       type: Number,

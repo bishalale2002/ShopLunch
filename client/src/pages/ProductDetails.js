@@ -2,12 +2,13 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Layouts from "../components/layout/Layouts";
 import { useParams } from "react-router-dom";
-
+import { useCart } from "../components/context/cart";
+import toast from "react-hot-toast";
 const ProductDetails = () => {
   const [product, setProduct] = useState({});
   const [relatedProduct, setRelatedProduct] = useState([]);
   const params = useParams();
-
+  const [cart, setCart] = useCart();
   const getProduct = useCallback(async () => {
     try {
       const { data } = await axios.get(
@@ -81,7 +82,29 @@ const ProductDetails = () => {
               {product.shipping ? "Available" : "Not Available"}
             </p>
             <div className="mt-auto">
-              <button className="btn btn-secondary w-50">Add to Cart</button>
+              <button
+                className="btn btn-secondary ms-1"
+                onClick={() => {
+                  // Set quantity to 1 for the item
+                  const productWithQuantity = {
+                    ...product,
+                    quantity: 1,
+                  };
+
+                  // Update the cart state with the new product
+                  setCart([...cart, productWithQuantity]);
+
+                  // Save the updated cart to localStorage with quantity set to 1
+                  localStorage.setItem(
+                    "cart",
+                    JSON.stringify([...cart, productWithQuantity])
+                  );
+
+                  toast.success("Item Added to Cart");
+                }}
+              >
+                Add To Cart
+              </button>
             </div>
           </div>
         </div>

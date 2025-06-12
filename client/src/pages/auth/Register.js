@@ -36,7 +36,9 @@ function Register() {
           navigate("/login");
         }, 3000);
       } else {
-        setAlertMessage(res.data.message);
+        setAlertMessage(
+          res.data.message || "An error occurred. Please try again."
+        );
         setAlertType("danger");
         setTimeout(() => {
           setAlertMessage("");
@@ -44,7 +46,9 @@ function Register() {
       }
     } catch (error) {
       console.log(error);
-      setAlertMessage("Something went wrong");
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong from backend";
+      setAlertMessage(errorMessage);
       setAlertType("danger");
       setTimeout(() => {
         setAlertMessage("");

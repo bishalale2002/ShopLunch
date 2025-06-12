@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import Layouts from "../components/layout/Layouts";
-
+import { useCart } from "../components/context/cart";
+import toast from "react-hot-toast";
 const CategoryProduct = () => {
   const [products, setProducts] = useState([]);
   const [category, setCategory] = useState({});
   const params = useParams();
+  const [cart, setCart] = useCart();
   const navigate = useNavigate();
 
   const getProducts = async () => {
@@ -64,7 +66,27 @@ const CategoryProduct = () => {
                     >
                       More Details
                     </button>
-                    <button className="btn btn-secondary ms-1">
+                    <button
+                      className="btn btn-secondary ms-1"
+                      onClick={() => {
+                        // Set quantity to 1 for the item
+                        const productWithQuantity = {
+                          ...product,
+                          quantity: 1,
+                        };
+
+                        // Update the cart state with the new product
+                        setCart([...cart, productWithQuantity]);
+
+                        // Save the updated cart to localStorage with quantity set to 1
+                        localStorage.setItem(
+                          "cart",
+                          JSON.stringify([...cart, productWithQuantity])
+                        );
+
+                        toast.success("Item Added to Cart");
+                      }}
+                    >
                       Add To Cart
                     </button>
                   </div>

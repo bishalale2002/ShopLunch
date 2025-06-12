@@ -4,48 +4,84 @@ import { compatePassword, hashPassword } from "./../helpers/authHelper.js";
 import JWT from "jsonwebtoken";
 import bcrypt from "bcrypt";
 //REGISTER || POST
+import validator from "validator";
+
 export const registerController = async (req, res) => {
   try {
     const { name, email, password, phone, address, answer } = req.body;
 
-    if (!name) {
-      return res.status(400).send({ message: "Name is Empty" });
+    // Name validation
+    if (!name || name.length < 3) {
+      return res
+        .status(400)
+        .send({ message: "Name must be at least 3 characters" });
     }
-    if (!email) {
-      return res.status(400).send({ message: "Email is Empty" });
+
+    // Email validation
+    if (!email || !validator.isEmail(email)) {
+      return res.status(400).send({ message: "Invalid email format" });
     }
-    if (!password) {
-      return res.status(400).send({ message: "Password is Empty" });
+
+    // Password validation
+    if (
+      !password ||
+      password.length < 8 ||
+      !/\d/.test(password) ||
+      !/[a-zA-Z]/.test(password)
+    ) {
+      return res.status(400).send({
+        message:
+          "Password must be at least 8 characters, and include both letters and numbers",
+      });
     }
-    if (!phone) {
-      return res.status(400).send({ message: "Phone is Empty" });
+
+    // Phone validation
+    if (!phone || phone.length < 10 || !/^\d+$/.test(phone)) {
+      return res.status(400).send({
+        message:
+          "Phone number must be at least 10 digits and contain only numbers",
+      });
     }
+
+    // Address validation
     if (!address) {
-      return res.status(400).send({ message: "Address is Empty" });
-    }
-    if (!answer) {
-      return res.status(400).send({ message: "Answer is Empty" });
+      return res.status(400).send({ message: "Address is required" });
     }
 
-    // Check user
+    // Answer validation
+    if (!answer || answer.length < 3) {
+      return res
+        .status(400)
+        .send({ message: "Answer must be at least 3 characters long" });
+    }
+
+    // Check for existing user with the same email
     const existingUser = await userModel.findOne({ email });
-
-    // For existing users
     if (existingUser) {
-      return res.status(409).send({ error: "User Already Exists" });
+      return res
+        .status(409)
+        .send({ message: "User already exists with this email" });
     }
 
-    // Register user
+    // Check for existing user with the same phone
+    const existingPhone = await userModel.findOne({ phone });
+    if (existingPhone) {
+      return res
+        .status(409)
+        .send({ message: "Phone number already registered" });
+    }
+
+    // Hash the password before saving to DB
     const hashedPassword = await hashPassword(password);
 
-    // Saving data to DB
+    // Create and save new user
     const user = await new userModel({
       name,
       email,
       password: hashedPassword,
       phone,
       address,
-      answer, // Include the answer field here
+      answer,
     }).save();
 
     res
@@ -55,8 +91,8 @@ export const registerController = async (req, res) => {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error in register",
-      error,
+      message: "Error during registration",
+      error: error.message || error,
     });
   }
 };

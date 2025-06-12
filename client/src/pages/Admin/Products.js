@@ -24,7 +24,7 @@ const Products = () => {
     fetchProducts();
   }, []);
 
-  if (loading) return <h2>Loading products...</h2>;
+  if (loading) return <h2>Loading Products...</h2>;
   if (error) return <h2>{error}</h2>;
 
   return (
