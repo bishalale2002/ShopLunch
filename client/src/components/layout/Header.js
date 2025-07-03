@@ -47,6 +47,10 @@ export default function Header() {
                 <NavLink to="/" className="nav-link">
                   Home
                 </NavLink>
+              </li><li className="nav-item">
+                <NavLink to="/bidding" className="nav-link">
+                  Bid Now
+                </NavLink>
               </li>
               <li className="nav-item dropdown">
                 <Link

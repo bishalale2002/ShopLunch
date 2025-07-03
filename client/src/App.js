@@ -24,6 +24,7 @@ import Categories from "./pages/Categories.js";
 import CategoryProduct from "./pages/CategoryProduct.js";
 import CartPage from "./pages/CartPage.js";
 import AdminOrders from "./pages/Admin/AdminOrders.js";
+import Bidding from "./pages/user/Bidding.js";
 function App() {
   return (
     <Routes>
@@ -33,6 +34,7 @@ function App() {
       <Route path="/cart" element={<CartPage />} />
       <Route path="/categories/:slug" element={<CategoryProduct />} />
       <Route path="/search" element={<Search />} />
+        <Route path="/bidding" element={<Bidding />} />
       <Route path="/" element={<HomePage />} />
       <Route path="/dashboard" element={<PrivateRoute />}>
         <Route path="user" element={<DashBoard />} />
