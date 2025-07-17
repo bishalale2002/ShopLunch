@@ -25,6 +25,7 @@ import CategoryProduct from "./pages/CategoryProduct.js";
 import CartPage from "./pages/CartPage.js";
 import AdminOrders from "./pages/Admin/AdminOrders.js";
 import Bidding from "./pages/user/Bidding.js";
+import Seller from "./pages/user/Seller.js";
 function App() {
   return (
     <Routes>
@@ -57,6 +58,7 @@ function App() {
       <Route path="/*" element={<Pagenotfound />} />
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/dashboard/seller" element={<Seller />} />
     </Routes>
   );
 }
