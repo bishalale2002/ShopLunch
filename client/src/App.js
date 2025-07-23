@@ -27,7 +27,7 @@ import AdminOrders from "./pages/Admin/AdminOrders.js";
 import Bidding from "./pages/user/Bidding.js";
 import Seller from "./pages/user/Seller.js";
 import SellerListing from "./pages/user/SellerListing.js";
-import Listings from "./pages/user/Listings.js";
+import Listings from "./pages/user/YourListing.js";
 function App() {
   return (
     <Routes>

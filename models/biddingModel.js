@@ -1,4 +1,3 @@
-// models/biddingModel.js
 import mongoose from "mongoose";
 
 const biddingSchema = new mongoose.Schema(
@@ -30,6 +29,12 @@ const biddingSchema = new mongoose.Schema(
     highestBidderGmail: {
       type: String,
       default: null,
+    },
+
+    // Add this photo field for storing image data and type
+    photo: {
+      data: Buffer,
+      contentType: String,
     },
   },
   { timestamps: true }

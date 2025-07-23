@@ -145,3 +145,15 @@ export const biddingPhotoController = async (req, res) => {
     res.status(500).send({ success: false, message: "Error fetching photo", error });
   }
 };
+
+
+export const getBiddingsBySeller = async (req, res) => {
+  try {
+    const email = req.params.email;
+    const biddings = await biddingModel.find({ sellerGmail: email }).sort({ createdAt: -1 });
+    res.status(200).send({ success: true, biddings });
+  } catch (error) {
+    res.status(500).send({ success: false, message: "Failed to fetch biddings", error });
+  }
+};
+
