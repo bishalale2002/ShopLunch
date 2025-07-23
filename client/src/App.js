@@ -26,6 +26,8 @@ import CartPage from "./pages/CartPage.js";
 import AdminOrders from "./pages/Admin/AdminOrders.js";
 import Bidding from "./pages/user/Bidding.js";
 import Seller from "./pages/user/Seller.js";
+import SellerListing from "./pages/user/SellerListing.js";
+import Listings from "./pages/user/Listings.js";
 function App() {
   return (
     <Routes>
@@ -59,6 +61,9 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/dashboard/seller" element={<Seller />} />
+     <Route path="/dashboard/seller/addTOListing" element={<SellerListing />} />
+     <Route path="/dashboard/seller/yourListing" element={<Listings />} />
+
     </Routes>
   );
 }
