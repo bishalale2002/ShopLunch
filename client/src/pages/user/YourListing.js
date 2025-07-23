@@ -15,10 +15,9 @@ export default function YourListing() {
         return;
       }
 
-      console.log("Sending request to:", `/api/v1/bidding/seller-biddings/${auth.user.email}`);
-     const { data } = await axios.get(`/api/v1/bidding/seller-products/${auth.user.email}`);
-
-      console.log("Response from server:", data);
+      const { data } = await axios.get(
+        `/api/v1/bidding/seller-products/${auth.user.email}`
+      );
 
       if (data?.success) {
         setBiddings(data.biddings);
@@ -30,8 +29,27 @@ export default function YourListing() {
     }
   };
 
+  const handleDelete = async (id) => {
+    try {
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete this bidding item?"
+      );
+      if (!confirmDelete) return;
+
+      await axios.delete(`/api/v1/bidding/delete-bid/${id}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
+      // Refresh the list after deletion
+      getSellerBiddings();
+    } catch (error) {
+      console.error("Error deleting bidding item:", error.message);
+      alert("Failed to delete bidding item.");
+    }
+  };
+
   useEffect(() => {
-    console.log("Current user email:", auth?.user?.email);
     getSellerBiddings();
   }, [auth?.user?.email]);
 
@@ -44,7 +62,7 @@ export default function YourListing() {
           </div>
 
           <div className="col-md-9">
-            <h4>Your Listed Biddings </h4>
+            <h4>Your Listed Biddings</h4>
             <div className="row">
               {biddings.length === 0 ? (
                 <p>No bidding items listed yet.</p>
@@ -60,7 +78,9 @@ export default function YourListing() {
                       />
                       <div className="card-body">
                         <h5 className="card-title">{b.name}</h5>
-                        <p className="card-text">{b.description.substring(0, 60)}...</p>
+                        <p className="card-text">
+                          {b.description.substring(0, 60)}...
+                        </p>
                         <p className="card-text">
                           <strong>Starting Amount:</strong> ${b.startingAmount}
                         </p>
@@ -68,8 +88,28 @@ export default function YourListing() {
                           <strong>Current Amount:</strong> ${b.currentAmount}
                         </p>
                         <p className="card-text">
-                          <strong>Expiration Time:</strong> {new Date(b.expirationTime).toLocaleString()}
+                          <strong>Expiration Time:</strong>{" "}
+                          {new Date(b.expirationTime).toLocaleString()}
                         </p>
+                        <p className="card-text">
+                          <strong>Highest Bidder Email:</strong>{" "}
+                          {b.highestBidderGmail || "No bids yet"}
+                        </p>
+                        <p
+                          className="card-text"
+                          style={{
+                            color: b.status === "sold" ? "red" : "green",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          Status: {b.status}
+                        </p>
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => handleDelete(b._id)}
+                        >
+                          Delete
+                        </button>
                       </div>
                     </div>
                   </div>

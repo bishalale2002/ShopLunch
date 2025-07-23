@@ -143,27 +143,28 @@ const CartPage = () => {
             </div>
 
             <div className="col-md-4">
-              <div className="border p-3">
-                <h4>Cart Summary</h4>
-                <p>Total Items: {cart.length}</p>
-                <p>
-                  Total Price: $
-                  {cart
-                    .reduce(
-                      (total, item) => total + item.price * item.quantity,
-                      0
-                    )
-                    .toFixed(2)}
-                </p>
+            <div className="border p-3">
+  <h4>Cart Summary</h4>
+  <p>Total Items: {cart.length}</p>
+  <p>
+    Total Price: $
+    {cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
+  </p>
 
-                <button
-                  className="btn btn-success"
-                  onClick={handleMockPayment}
-                  disabled={loading || !auth?.user?.address}
-                >
-                  {loading ? "Processing..." : "Place Order (Mock Payment)"}
-                </button>
-              </div>
+  {/* Show message if user not logged in */}
+  {!auth?.token && (
+    <p className="text-danger mb-2">Please login to pay</p>
+  )}
+
+  <button
+    className="btn btn-success"
+    onClick={handleMockPayment}
+    disabled={loading || !auth?.token || !auth?.user?.address}
+  >
+    {loading ? "Processing..." : "Place Order (Mock Payment)"}
+  </button>
+</div>
+
             </div>
           </div>
         ) : (

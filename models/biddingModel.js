@@ -30,11 +30,14 @@ const biddingSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-
-    // Add this photo field for storing image data and type
     photo: {
       data: Buffer,
       contentType: String,
+    },
+    status: {
+      type: String,
+      enum: ["available", "sold"],
+      default: "available",
     },
   },
   { timestamps: true }
