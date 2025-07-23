@@ -388,35 +388,42 @@ export const braintreeTokenController = async (req, res) => {
 export const braintreePaymnetController = async (req, res) => {
   try {
     const { cart, nonce } = req.body;
-    let total = 0;
 
-    cart.map((i) => {
-      total += i.price;
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ ok: false, message: "User not authenticated" });
+    }
+
+    if (!cart || !Array.isArray(cart) || cart.length === 0) {
+      return res.status(400).json({ ok: false, message: "Cart is empty or invalid" });
+    }
+
+    // Calculate total amount
+    const totalAmount = cart.reduce(
+      (total, item) => total + item.price * (item.quantity || 1),
+      0
+    );
+
+    // Save mock order
+    const order = new orderModel({
+      products: cart,
+      payment: {
+        transactionId: "MOCK_TXN_ID",
+        amount: totalAmount,
+        status: "mock-paid",
+      },
+      buyer: req.user._id,
     });
 
-    let transaction = gateway.transaction.sale(
-      {
-        amount: total,
-        paymentMethodNonce: nonce,
-        options: { submitForSettlement: true },
-      },
-      function (error, result) {
-        if (result) {
-          const order = new orderModel({
-            products: cart,
-            payment: result,
-            buyer: req.user._id,
-          }).save();
-          res.json({ ok: true });
-        } else {
-          res.status(500).send(error);
-        }
-      }
-    );
+    await order.save();
+
+    return res.json({ ok: true, message: "Mock payment successful" });
   } catch (error) {
-    console.log(error);
+    console.error("Mock payment error:", error);
+    return res.status(500).send({ ok: false, message: "Error in mock payment", error });
   }
 };
+
+
 
 //search controller
 export const searchAlgorithmController = async (req, res) => {

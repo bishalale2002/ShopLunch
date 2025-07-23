@@ -3,16 +3,13 @@ import Layouts from "../components/layout/Layouts";
 import { useAuth } from "../components/context/auth";
 import { useCart } from "../components/context/cart";
 import { useNavigate } from "react-router-dom";
-import DropIn from "braintree-web-drop-in-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+
 const CartPage = () => {
   const navigate = useNavigate();
   const [cart, setCart] = useCart();
   const [auth] = useAuth();
-  const [clientToken, setClientToken] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
-  const [instance, setInstance] = useState();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -24,19 +21,6 @@ const CartPage = () => {
     );
   }, [setCart]);
 
-  useEffect(() => {
-    getToken();
-  }, [auth?.token]);
-
-  const getToken = async () => {
-    try {
-      const { data } = await axios.get("/api/v1/product/braintree/token");
-      setClientToken(data?.clientToken);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleRemoveItem = (productId) => {
     setCart((prevCart) => {
       const updatedCart = prevCart.filter((item) => item._id !== productId);
@@ -45,24 +29,30 @@ const CartPage = () => {
     });
   };
 
-  const handlePayments = async () => {
+  const handleMockPayment = async () => {
     try {
       setLoading(true);
-      const { nonce } = await instance.requestPaymentMethod();
-      const response = await axios.post("/api/v1/product/braintree/payment", {
-        nonce,
-        cart,
-      });
-      console.log(response.data);
-      setLoading(false);
+      const response = await axios.post(
+        "/api/v1/product/braintree/payment",
+        {
+          nonce: "mock-nonce", // bypassing DropIn
+          cart,
+        },
+        {
+          headers: {
+            Authorization: auth?.token,
+          },
+        }
+      );
+      toast.success(response?.data?.message || "Mock Payment Success");
       localStorage.removeItem("cart");
       setCart([]);
       navigate("/dashboard/user/orders");
-      toast.success("Payment Successful!");
     } catch (error) {
-      setLoading(false);
       console.log(error);
-      alert("Payment Failed. Please try again.");
+      toast.error("Mock payment failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -151,6 +141,7 @@ const CartPage = () => {
                 </div>
               ))}
             </div>
+
             <div className="col-md-4">
               <div className="border p-3">
                 <h4>Cart Summary</h4>
@@ -165,31 +156,13 @@ const CartPage = () => {
                     .toFixed(2)}
                 </p>
 
-                {clientToken ? (
-                  <div className="form-group mb-3">
-                    <DropIn
-                      options={{
-                        authorization: clientToken,
-                        paypal: { flow: "vault" },
-                      }}
-                      onInstance={(instance) => setInstance(instance)}
-                      onError={(error) => {
-                        console.error("Braintree Error:", error);
-                        alert("Please check your card details and try again."); // Custom error message
-                      }}
-                    />
-
-                    <button
-                      className="btn btn-primary"
-                      onClick={handlePayments}
-                      disabled={loading || !instance || !auth?.user?.address}
-                    >
-                      {loading ? "Processing..." : "Make Payment"}
-                    </button>
-                  </div>
-                ) : (
-                  <p>Loading payment options...</p>
-                )}
+                <button
+                  className="btn btn-success"
+                  onClick={handleMockPayment}
+                  disabled={loading || !auth?.user?.address}
+                >
+                  {loading ? "Processing..." : "Place Order (Mock Payment)"}
+                </button>
               </div>
             </div>
           </div>
