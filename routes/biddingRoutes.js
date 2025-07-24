@@ -10,6 +10,8 @@ import {
   placeBidController,
   biddingPhotoController,
   getBiddingsBySeller,
+  updateExpiredBiddingsStatus,
+  getBidById,
 } from "../controllers/biddingController.js";
 
 
@@ -22,6 +24,9 @@ router.get("/bid-photo/:id", biddingPhotoController);
 router.delete("/delete-bid/:id", deleteBiddingController);
 router.put("/update-bid/:id", requireSignIn, formidable(), updateBiddingController);
 router.put("/place-bid/:id", requireSignIn, placeBidController);
+router.put("/update-expired-status", updateExpiredBiddingsStatus);
+router.get('/get-bid/:id', getBidById);
+
 
 // Correct function and route path here
 router.get("/seller-products/:email", getBiddingsBySeller);

@@ -28,6 +28,7 @@ import Bidding from "./pages/user/Bidding.js";
 import Seller from "./pages/user/Seller.js";
 import SellerListing from "./pages/user/SellerListing.js";
 import Listings from "./pages/user/YourListing.js";
+import BidDetails from "./pages/user/BidDetails.js";
 function App() {
   return (
     <Routes>
@@ -63,7 +64,7 @@ function App() {
       <Route path="/dashboard/seller" element={<Seller />} />
      <Route path="/dashboard/seller/addTOListing" element={<SellerListing />} />
      <Route path="/dashboard/seller/yourListing" element={<Listings />} />
-
+<Route path="/dashboard/bidding/:id" element={<BidDetails />} />
     </Routes>
   );
 }

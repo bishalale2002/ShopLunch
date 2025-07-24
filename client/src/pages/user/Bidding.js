@@ -3,7 +3,6 @@ import Layouts from "../../components/layout/Layouts";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-// Auth check from localStorage
 const isAuthenticated = () => {
   const auth = localStorage.getItem("auth");
   return auth && JSON.parse(auth).token;
@@ -13,11 +12,18 @@ export default function Bidding() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
 
-  // Fetch all bids from backend
+  // Sync expired statuses on load
+  const syncExpiredStatuses = async () => {
+    try {
+      await axios.put("/api/v1/bidding/update-expired-status");
+    } catch (error) {
+      console.error("Error syncing expired statuses:", error);
+    }
+  };
+
   const fetchProducts = async () => {
     try {
       const { data } = await axios.get("/api/v1/bidding/all-bids");
-      console.log("Fetched bidding data:", data);
       setProducts(data?.biddings || []);
     } catch (error) {
       console.error("Error fetching bidding products:", error);
@@ -25,7 +31,8 @@ export default function Bidding() {
   };
 
   useEffect(() => {
-    fetchProducts();
+    // First sync expired statuses, then fetch products
+    syncExpiredStatuses().then(() => fetchProducts());
   }, []);
 
   // Seller navigation
@@ -37,27 +44,23 @@ export default function Bidding() {
     }
   };
 
-  // Timer display
-const calculateRemainingTime = (expireDate) => {
-  const now = new Date();
-  const end = new Date(expireDate);
-  const diff = end - now;
+  const calculateRemainingTime = (expireDate) => {
+    const now = new Date();
+    const end = new Date(expireDate);
+    const diff = end - now;
 
-  if (diff <= 0) return "Expired";
+    if (diff <= 0) return "Expired";
 
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const minutes = Math.floor((diff / (1000 * 60)) % 60);
-  const seconds = Math.floor((diff / 1000) % 60);
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
 
-  return `${hours} hour${hours !== 1 ? "s" : ""} ${minutes} minute${minutes !== 1 ? "s" : ""} ${seconds} second${seconds !== 1 ? "s" : ""}`;
-};
+    return `${days} day${days !== 1 ? "s" : ""} ${hours} hour${hours !== 1 ? "s" : ""} ${minutes} minute${minutes !== 1 ? "s" : ""} ${seconds} second${seconds !== 1 ? "s" : ""}`;
+  };
 
-  // Filter products that are available and not expired
-  const filteredProducts = products.filter((p) => {
-    const isAvailable = p.status?.toLowerCase() === "available";
-    const notExpired = new Date(p.expirationTime) > new Date();
-    return isAvailable && notExpired;
-  });
+  // Show all available products which are not expired yet
+  const filteredProducts = products.filter((p) => p.status === "available");
 
   return (
     <Layouts title="Bidding">
@@ -70,6 +73,12 @@ const calculateRemainingTime = (expireDate) => {
         </div>
 
         <div className="row">
+          {filteredProducts.length === 0 && (
+            <p className="text-center text-muted mt-4">
+              No available products for bidding at the moment.
+            </p>
+          )}
+
           {filteredProducts.map((product) => (
             <div key={product._id} className="col-md-4 mb-4">
               <div className="card h-100 shadow-sm">
@@ -88,20 +97,17 @@ const calculateRemainingTime = (expireDate) => {
                     <strong>Current Amount:</strong> ${product.currentAmount}
                   </p>
                   <p className="mb-1">
-                    <strong>Highest Bidder:</strong>{" "}
-                    {product.highestBidderGmail || "No bids yet"}
+                    <strong>Highest Bidder:</strong> {product.highestBidderGmail || "No bids yet"}
                   </p>
                   <p className="mb-1">
-                    <strong>Time Left:</strong>{" "}
-                    {calculateRemainingTime(product.expirationTime)}
+                    <strong>Time Left:</strong> {calculateRemainingTime(product.expirationTime)}
                   </p>
                   <p>
-                    <strong>Status:</strong>{" "}
-                    <span style={{ color: "green" }}>{product.status}</span>
+                    <strong>Status:</strong> <span style={{ color: "green" }}>{product.status}</span>
                   </p>
                   <button
                     className="btn btn-outline-primary w-100"
-                    onClick={() => navigate(`/bidding/product/${product._id}`)}
+                    onClick={() => navigate(`/dashboard/bidding/${product._id}`)}
                   >
                     Bid Now
                   </button>
@@ -110,12 +116,6 @@ const calculateRemainingTime = (expireDate) => {
             </div>
           ))}
         </div>
-
-        {filteredProducts.length === 0 && (
-          <p className="text-center text-muted mt-4">
-            No available products for bidding at the moment.
-          </p>
-        )}
       </div>
     </Layouts>
   );

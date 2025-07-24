@@ -157,3 +157,46 @@ export const getBiddingsBySeller = async (req, res) => {
   }
 };
 
+export const updateExpiredBiddingsStatus = async (req, res) => {
+  try {
+    const now = new Date();
+
+    const expiredBiddings = await biddingModel.find({
+      status: "available",
+      expirationTime: { $lte: now },
+    });
+
+    for (const bidding of expiredBiddings) {
+      if (bidding.highestBidderGmail && bidding.highestBidderGmail.trim() !== "") {
+        bidding.status = "sold";
+      } else {
+        bidding.status = "unsold";
+      }
+      await bidding.save();
+    }
+
+    res.status(200).send({
+      success: true,
+      message: `Updated ${expiredBiddings.length} expired bidding(s) status`,
+      updatedCount: expiredBiddings.length,
+    });
+  } catch (error) {
+    console.error("Error updating expired biddings status:", error);
+    res.status(500).send({ success: false, message: "Failed to update expired biddings", error });
+  }
+};
+
+// get bid by id 
+
+export  const getBidById = async (req, res) => {
+  try {
+    const bid = await biddingModel.findById(req.params.id);
+    if (!bid) {
+      return res.status(404).send({ success: false, message: "Bid not found" });
+    }
+    res.send({ success: true, bid });
+  } catch (err) {
+    console.error("Error fetching bid by ID:", err);
+    res.status(500).send({ success: false, message: "Error fetching bid" });
+  }
+};
