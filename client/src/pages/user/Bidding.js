@@ -3,6 +3,7 @@ import Layouts from "../../components/layout/Layouts";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+// Check if user is authenticated
 const isAuthenticated = () => {
   const auth = localStorage.getItem("auth");
   return auth && JSON.parse(auth).token;
@@ -12,7 +13,20 @@ export default function Bidding() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
 
-  // Sync expired statuses on load
+  // Mask email address for privacy
+  const maskEmail = (email) => {
+    const [user, domain] = email.split("@");
+    if (!user || !domain) return email;
+
+    const maskedUser =
+      user.length <= 2
+        ? user[0] + "*".repeat(user.length - 1)
+        : user[0] + "*".repeat(user.length - 2) + user[user.length - 1];
+
+    return `${maskedUser}@${domain}`;
+  };
+
+  // Sync expired bidding statuses with the server
   const syncExpiredStatuses = async () => {
     try {
       await axios.put("/api/v1/bidding/update-expired-status");
@@ -21,6 +35,7 @@ export default function Bidding() {
     }
   };
 
+  // Fetch bidding products
   const fetchProducts = async () => {
     try {
       const { data } = await axios.get("/api/v1/bidding/all-bids");
@@ -30,12 +45,12 @@ export default function Bidding() {
     }
   };
 
+  // Run sync and fetch on mount
   useEffect(() => {
-    // First sync expired statuses, then fetch products
-    syncExpiredStatuses().then(() => fetchProducts());
+    syncExpiredStatuses().then(fetchProducts);
   }, []);
 
-  // Seller navigation
+  // Redirect seller
   const handleBecomeSeller = () => {
     if (isAuthenticated()) {
       navigate("/dashboard/seller");
@@ -44,6 +59,7 @@ export default function Bidding() {
     }
   };
 
+  // Calculate remaining time for a bid
   const calculateRemainingTime = (expireDate) => {
     const now = new Date();
     const end = new Date(expireDate);
@@ -59,7 +75,7 @@ export default function Bidding() {
     return `${days} day${days !== 1 ? "s" : ""} ${hours} hour${hours !== 1 ? "s" : ""} ${minutes} minute${minutes !== 1 ? "s" : ""} ${seconds} second${seconds !== 1 ? "s" : ""}`;
   };
 
-  // Show all available products which are not expired yet
+  // Filter only available bidding products
   const filteredProducts = products.filter((p) => p.status === "available");
 
   return (
@@ -73,48 +89,53 @@ export default function Bidding() {
         </div>
 
         <div className="row">
-          {filteredProducts.length === 0 && (
+          {filteredProducts.length === 0 ? (
             <p className="text-center text-muted mt-4">
               No available products for bidding at the moment.
             </p>
-          )}
-
-          {filteredProducts.map((product) => (
-            <div key={product._id} className="col-md-4 mb-4">
-              <div className="card h-100 shadow-sm">
-                <img
-                  src={`/api/v1/bidding/bid-photo/${product._id}`}
-                  className="card-img-top"
-                  alt={product.name}
-                  style={{ height: "250px", objectFit: "cover" }}
-                />
-                <div className="card-body">
-                  <h5 className="card-title">{product.name}</h5>
-                  <p className="mb-1">
-                    <strong>Starting Amount:</strong> ${product.startingAmount}
-                  </p>
-                  <p className="mb-1">
-                    <strong>Current Amount:</strong> ${product.currentAmount}
-                  </p>
-                  <p className="mb-1">
-                    <strong>Highest Bidder:</strong> {product.highestBidderGmail || "No bids yet"}
-                  </p>
-                  <p className="mb-1">
-                    <strong>Time Left:</strong> {calculateRemainingTime(product.expirationTime)}
-                  </p>
-                  <p>
-                    <strong>Status:</strong> <span style={{ color: "green" }}>{product.status}</span>
-                  </p>
-                  <button
-                    className="btn btn-outline-primary w-100"
-                    onClick={() => navigate(`/dashboard/bidding/${product._id}`)}
-                  >
-                    Bid Now
-                  </button>
+          ) : (
+            filteredProducts.map((product) => (
+              <div key={product._id} className="col-md-4 mb-4">
+                <div className="card h-100 shadow-sm">
+                  <img
+                    src={`/api/v1/bidding/bid-photo/${product._id}`}
+                    className="card-img-top"
+                    alt={product.name}
+                    style={{ height: "250px", objectFit: "cover" }}
+                  />
+                  <div className="card-body">
+                    <h5 className="card-title">{product.name}</h5>
+                    <p className="mb-1">
+                      <strong>Starting Amount:</strong> ${product.startingAmount}
+                    </p>
+                    <p className="mb-1">
+                      <strong>Current Amount:</strong> ${product.currentAmount}
+                    </p>
+                    <p className="mb-1">
+                      <strong>Highest Bidder:</strong>{" "}
+                      {product.highestBidderGmail
+                        ? maskEmail(product.highestBidderGmail)
+                        : "No bids yet"}
+                    </p>
+                    <p className="mb-1">
+                      <strong>Time Left:</strong>{" "}
+                      {calculateRemainingTime(product.expirationTime)}
+                    </p>
+                    <p>
+                      <strong>Status:</strong>{" "}
+                      <span style={{ color: "green" }}>{product.status}</span>
+                    </p>
+                    <button
+                      className="btn btn-outline-primary w-100"
+                      onClick={() => navigate(`/dashboard/bidding/${product._id}`)}
+                    >
+                      Bid Now
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </Layouts>

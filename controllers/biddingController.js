@@ -114,10 +114,14 @@ export const placeBidController = async (req, res) => {
       return res.status(400).send({ success: false, message: "Bidding has expired" });
     }
 
-    if (amount <= bidding.currentAmount || amount <= bidding.startingAmount) {
+    const minAllowedBid = bidding.currentAmount
+      ? bidding.currentAmount * 1.05
+      : bidding.startingAmount * 1.05;
+
+    if (amount < minAllowedBid) {
       return res.status(400).send({
         success: false,
-        message: "Bid must be higher than current and starting bid",
+        message: `Bid must be at least 5% higher than current bid (${minAllowedBid.toFixed(2)})`,
       });
     }
 

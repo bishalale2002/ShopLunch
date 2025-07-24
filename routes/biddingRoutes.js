@@ -23,7 +23,7 @@ router.get("/single-bid/:id", getSingleBiddingController);
 router.get("/bid-photo/:id", biddingPhotoController);
 router.delete("/delete-bid/:id", deleteBiddingController);
 router.put("/update-bid/:id", requireSignIn, formidable(), updateBiddingController);
-router.put("/place-bid/:id", requireSignIn, placeBidController);
+router.post("/place-bid/:id", requireSignIn, placeBidController);
 router.put("/update-expired-status", updateExpiredBiddingsStatus);
 router.get('/get-bid/:id', getBidById);
 
