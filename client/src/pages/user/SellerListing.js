@@ -16,6 +16,18 @@ function CreateBidding() {
   const [startingAmount, setStartingAmount] = useState("");
   const [expirationTime, setExpirationTime] = useState("");
 
+  // Helper to format date for datetime-local input (YYYY-MM-DDTHH:mm)
+  const formatDateTime = (date) => {
+    return new Date(date).toISOString().slice(0, 16);
+  };
+
+  const now = new Date();
+  const minDateTime = formatDateTime(now);
+
+  const futureDate = new Date();
+  futureDate.setDate(futureDate.getDate() + 15);
+  const maxDateTime = formatDateTime(futureDate);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -30,14 +42,14 @@ function CreateBidding() {
       formData.append("description", description);
       formData.append("startingAmount", startingAmount);
       formData.append("expirationTime", expirationTime);
-      formData.append("sellerGmail", auth?.user?.email); // send seller email automatically
+      formData.append("sellerGmail", auth?.user?.email);
       if (photo) formData.append("photo", photo);
 
       const { data } = await axios.post("/api/v1/bidding/create-bid", formData);
 
       if (data.success) {
         toast.success("Bidding item created successfully!");
-        navigate("/dashboard/seller/yourListing"); // Adjust route as needed
+        navigate("/dashboard/seller/yourListing");
       } else {
         toast.error(data.message || "Failed to create bidding item");
       }
@@ -109,6 +121,8 @@ function CreateBidding() {
                 className="form-control mb-3"
                 value={expirationTime}
                 onChange={(e) => setExpirationTime(e.target.value)}
+                min={minDateTime}
+                max={maxDateTime}
               />
 
               <button className="btn btn-primary" onClick={handleSubmit}>
