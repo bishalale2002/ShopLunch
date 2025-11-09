@@ -21,7 +21,7 @@ const AdminOrders = () => {
   const getOrders = async () => {
     try {
       const response = await axios.get("/api/v1/auth/all-orders");
-      setOrders(response.data.orders); // Directly access data.orders from the response
+      setOrders(response.data.orders); // Access data.orders from the response
     } catch (error) {
       console.error(error);
     }
@@ -32,7 +32,7 @@ const AdminOrders = () => {
       await axios.put(`/api/v1/auth/order-status/${orderId}`, {
         status: value,
       });
-      getOrders(); // No need to store the response in a variable
+      getOrders(); // Refresh orders
     } catch (error) {
       console.log(error);
     }
@@ -46,7 +46,7 @@ const AdminOrders = () => {
             <AdminMenu />
           </div>
           <div className="col-md-9">
-            <h1 className="text-center">All orders</h1>
+            <h1 className="text-center">All Orders</h1>
             <table className="table table-striped">
               <thead>
                 <tr>
@@ -62,6 +62,7 @@ const AdminOrders = () => {
                 {orders.length > 0 ? (
                   orders.map((order, index) => (
                     <React.Fragment key={order._id}>
+                      {/* Order Summary */}
                       <tr>
                         <td>{index + 1}</td>
                         <td>
@@ -85,7 +86,15 @@ const AdminOrders = () => {
                         </td>
                         <td>{order.buyer?.name || "N/A"}</td>
                         <td>{order.products.length}</td>
-                        <td>{order.payment ? "Paid" : "Not Paid"}</td>
+                        <td>
+                          {order.payment
+                            ? `Paid${
+                                order.payment.referenceId
+                                  ? ` (Ref: ${order.payment.referenceId})`
+                                  : ""
+                              }`
+                            : "Not Paid"}
+                        </td>
                         <td>
                           {new Date(order.createdAt).toLocaleDateString()}
                         </td>
@@ -98,14 +107,8 @@ const AdminOrders = () => {
                             <h4>Order #{index + 1} - Products</h4>
                             <div className="row">
                               {order.products.map((product) => (
-                                <div
-                                  key={product._id}
-                                  className="col-md-4 mb-3"
-                                >
-                                  <div
-                                    className="card"
-                                    style={{ padding: "10px" }}
-                                  >
+                                <div key={product._id} className="col-md-4 mb-3">
+                                  <div className="card" style={{ padding: "10px" }}>
                                     <img
                                       src={`/api/v1/product/product-photo/${product._id}`}
                                       className="card-img-top"
@@ -117,12 +120,8 @@ const AdminOrders = () => {
                                       }}
                                     />
                                     <div className="card-body p-2">
-                                      <h6 className="card-title mb-1">
-                                        {product.name}
-                                      </h6>
-                                      <p className="card-text">
-                                        Price: ${product.price}
-                                      </p>
+                                      <h6 className="card-title mb-1">{product.name}</h6>
+                                      <p className="card-text">Price: ${product.price}</p>
                                     </div>
                                   </div>
                                 </div>

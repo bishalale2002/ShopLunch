@@ -8,6 +8,7 @@ import cors from "cors";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import biddingRoutes from "./routes/biddingRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -30,7 +31,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/bidding", biddingRoutes);
-
+app.use("/api/v1/payment/khalti", paymentRoutes); // Assuming payment routes are handled in biddingRoutes
 app.get("/", (req, res) => {
   res.send("<h1>Welcome To ShopLunch</h1>");
 });

@@ -1,6 +1,7 @@
 import fs from "fs";
 import slugify from "slugify";
 import biddingModel from "../models/biddingModel.js";
+import { sendEmail } from "../utils/emailSender.js";
 
 // CREATE BID ITEM
 
@@ -104,6 +105,8 @@ export const placeBidController = async (req, res) => {
   try {
     const { amount, bidderGmail } = req.body;
     const bidding = await biddingModel.findById(req.params.id);
+console.log("Current amount in DB:", bidding.currentAmount);
+console.log("Type of currentAmount:", typeof bidding.currentAmount);
 
     if (!bidding) {
       return res.status(404).send({ success: false, message: "Bidding not found" });
@@ -114,14 +117,23 @@ export const placeBidController = async (req, res) => {
       return res.status(400).send({ success: false, message: "Bidding has expired" });
     }
 
-    const minAllowedBid = bidding.currentAmount
-      ? bidding.currentAmount * 1.05
-      : bidding.startingAmount * 1.05;
+    // Adaptive minimum increment rate (Dijkstra-Inspired)
+    const currentBid = bidding.currentAmount || bidding.startingAmount;
+    let incrementRate;
+    if (currentBid < 100) {
+      incrementRate = 0.05; // 5%
+    } else if (currentBid < 1000) {
+      incrementRate = 0.03; // 3%
+    } else {
+      incrementRate = 0.01; // 1%
+    }
+
+    const minAllowedBid = currentBid * (1 + incrementRate);
 
     if (amount < minAllowedBid) {
       return res.status(400).send({
         success: false,
-        message: `Bid must be at least 5% higher than current bid (${minAllowedBid.toFixed(2)})`,
+        message: `Bid must be at least ${(incrementRate * 100).toFixed(0)}% higher than current bid ($${minAllowedBid.toFixed(2)})`,
       });
     }
 
@@ -135,6 +147,7 @@ export const placeBidController = async (req, res) => {
     res.status(500).send({ success: false, message: "Error placing bid", error });
   }
 };
+
 
 
 // GET PHOTO
@@ -161,6 +174,8 @@ export const getBiddingsBySeller = async (req, res) => {
   }
 };
 
+
+
 export const updateExpiredBiddingsStatus = async (req, res) => {
   try {
     const now = new Date();
@@ -170,25 +185,54 @@ export const updateExpiredBiddingsStatus = async (req, res) => {
       expirationTime: { $lte: now },
     });
 
+    let updatedCount = 0;
+
     for (const bidding of expiredBiddings) {
+      let message = "";
+
       if (bidding.highestBidderGmail && bidding.highestBidderGmail.trim() !== "") {
         bidding.status = "sold";
+        message = `🎉 Your bid for "${bidding.name}" has won at $${bidding.currentAmount}. The seller will contact you soon.`;
+
+        // Notify buyer
+        await sendEmail(
+          bidding.highestBidderGmail,
+          `You won the bid for "${bidding.name}"`,
+          message
+        );
+
+        // Notify seller
+        await sendEmail(
+          bidding.sellerGmail,
+          `Your product "${bidding.name}" has been sold!`,
+          `Your product has been sold to ${bidding.highestBidderGmail} for $${bidding.currentAmount}.`
+        );
       } else {
         bidding.status = "unsold";
+
+        // Notify seller only
+        await sendEmail(
+          bidding.sellerGmail,
+          `Your product "${bidding.name}" was unsold`,
+          `Unfortunately, your product received no bids before expiration.`
+        );
       }
+
       await bidding.save();
+      updatedCount++;
     }
 
     res.status(200).send({
       success: true,
-      message: `Updated ${expiredBiddings.length} expired bidding(s) status`,
-      updatedCount: expiredBiddings.length,
+      message: `Updated ${updatedCount} expired bidding(s) status and sent emails`,
+      updatedCount,
     });
   } catch (error) {
-    console.error("Error updating expired biddings status:", error);
+    console.error("❌ Error updating expired biddings:", error);
     res.status(500).send({ success: false, message: "Failed to update expired biddings", error });
   }
 };
+
 
 // get bid by id 
 
@@ -204,3 +248,4 @@ export  const getBidById = async (req, res) => {
     res.status(500).send({ success: false, message: "Error fetching bid" });
   }
 };
+
